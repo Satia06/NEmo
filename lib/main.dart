@@ -6,7 +6,7 @@ import 'dart:io';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if(!kIsWeb && (Platform.isWindows || Platform.isMacOS || Platform.isLinux) ){
+  if (!kIsWeb && (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
     await DesktopWindow.setMinWindowSize(Size(600, 800));
   }
   runApp(const MyApp());
@@ -19,18 +19,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Nemo',
-      theme: ThemeData(
-        fontFamily: 'Montserrat',
-        primaryTextTheme: TextTheme(
-          button:  TextStyle(
-            color: Colors.black54,
-
-          ),
+        title: 'Nemo',
+        theme: ThemeData(
+          fontFamily: 'Montserrat',
+          primaryTextTheme: TextTheme(
+              button: TextStyle(
+                color: Colors.white,
+              ),
+              headline4: TextStyle(color: Colors.white70, fontSize: 17)),
         ),
-      ),
-      home: HomePage()
-    );
+        home: HomePage());
   }
 }
-

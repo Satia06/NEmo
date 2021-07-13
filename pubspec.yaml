@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   desktop_window: ^0.4.0
   provider: ^5.0.0
+  googleapis: any
+  google_sign_in: any
 
 dev_dependencies:
   flutter_test:
@@ -59,7 +61,8 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/
+    - assets/images/
+
 
   fonts:
     - family: Montserrat

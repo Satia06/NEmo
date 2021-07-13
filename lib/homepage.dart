@@ -1,62 +1,88 @@
 import 'package:flutter/material.dart';
 import 'package:nemo/Widgets/menubutton.dart';
 import 'package:nemo/Widgets/searchbar.dart';
+import 'package:nemo/providers/search_provider.dart';
+import 'package:nemo/Widgets/expansionSearchBar.dart';
+import 'package:provider/provider.dart';
+import 'package:nemo/screens/list_of_Entities.dart';
 
-class HomePage extends StatefulWidget{
+class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
-class _HomePageState extends State<HomePage>{
+
+class _HomePageState extends State<HomePage> {
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(
-        children: [
-          Container(
-            alignment: Alignment.topLeft,
-            height: 150,
-            width: double.infinity,
-            child: Row(
-              children: [
-                  MenuButton(buttonName: 'File',names: ['Print', 'Close']),
-                  MenuButton(buttonName: 'Edit',names: ['Add/Modify']),
-                  MenuButton(buttonName: 'View',names: ['List']),
-                  MenuButton(buttonName: 'Help',names: ['Feedback'] )
-              ],
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              "assets/images/3.jpg",
+              fit: BoxFit.cover,
             ),
-          ),
-          Column(
-            children: [
-              OutlinedButton(
-                onPressed: (){},
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "List of Entities",
-                     style: TextStyle(
-                       fontSize: 18.0,
-                     ),
+            Column(
+              children: [
+                Container(
+                  alignment: Alignment.topLeft,
+                  height: 150,
+                  width: double.infinity,
+                  child: Row(
+                    children: [
+                      MenuButton(buttonName: 'File', names: ['Print', 'Close']),
+                      MenuButton(buttonName: 'Edit', names: ['Add/Modify']),
+                      MenuButton(buttonName: 'View', names: ['List']),
+                      MenuButton(buttonName: 'Help', names: ['Feedback'])
+                    ],
                   ),
                 ),
-              ),
-              SizedBox(height: 25),
-              Container(
-                width: MediaQuery.of(context).size.width/2 >600?600: MediaQuery.of(context).size.width/2,
-                child: SearchBar(tooltip:"Search Here!!"),
-              ),
-              SizedBox(height: 15,)
-            ],
-          ),
-          Expanded(
-            child: Container(
-              color: Colors.amber,
+                Column(
+                  children: [
+                    OutlinedButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ListOfEntities()));
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "List of Entities",
+                          style: TextStyle(
+                            fontSize: 18.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 25),
+                    ChangeNotifierProvider(
+                      create: (context) => SearchProvider(),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width / 2 > 600
+                            ? 600
+                            : MediaQuery.of(context).size.width / 2,
+                        child: ExpansionSearchBar(tooltip: "Search here!"),
+                        color: Colors.white.withOpacity(0.16),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    )
+                  ],
+                ),
+                //Expanded(
+                //child: Container(
+                //color: Colors.white,
+                //),
+                //)
+              ],
             ),
-          )
-        ],
+          ],
         ),
-      )
+      ),
     );
   }
 }
-
