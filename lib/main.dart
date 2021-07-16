@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:nemo/homepage.dart';
 import 'package:desktop_window/desktop_window.dart';
 import 'dart:io';
+import 'package:google_sign_in/google_sign_in.dart';
 
+GoogleSignIn _googleSignIn = GoogleSignIn(scopes: <String>[
+  'email',
+  'https://www.googleapis.com/auth/contacts.readonly',
+]);
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb && (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {

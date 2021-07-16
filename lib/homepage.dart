@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nemo/Widgets/menubutton.dart';
 import 'package:nemo/Widgets/searchbar.dart';
+import 'dart:io';
 import 'package:nemo/providers/search_provider.dart';
 import 'package:nemo/Widgets/expansionSearchBar.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +13,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  void emptyFunction() {
+    return;
+  }
+
+  void _close() {
+    exit(0);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,10 +40,22 @@ class _HomePageState extends State<HomePage> {
                   width: double.infinity,
                   child: Row(
                     children: [
-                      MenuButton(buttonName: 'File', names: ['Print', 'Close']),
-                      MenuButton(buttonName: 'Edit', names: ['Add/Modify']),
-                      MenuButton(buttonName: 'View', names: ['List']),
-                      MenuButton(buttonName: 'Help', names: ['Feedback'])
+                      MenuButton(
+                          buttonName: 'File',
+                          names: ['Print', 'Close'],
+                          submenuFunctions: [emptyFunction, _close]),
+                      MenuButton(
+                          buttonName: 'Edit',
+                          names: ['Add/Modify'],
+                          submenuFunctions: [emptyFunction]),
+                      MenuButton(
+                          buttonName: 'View',
+                          names: ['List'],
+                          submenuFunctions: [emptyFunction]),
+                      MenuButton(
+                          buttonName: 'Help',
+                          names: ['Feedback'],
+                          submenuFunctions: [emptyFunction])
                     ],
                   ),
                 ),
@@ -43,9 +64,10 @@ class _HomePageState extends State<HomePage> {
                     OutlinedButton(
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ListOfEntities()));
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ListOfEntities()),
+                        );
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),

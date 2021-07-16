@@ -4,8 +4,12 @@ import 'dart:math';
 class MenuButton extends StatelessWidget {
   final String buttonName;
   final List<String> names;
+  final List<void Function()> submenuFunctions;
 
-  MenuButton({required this.buttonName, required this.names});
+  MenuButton(
+      {required this.buttonName,
+      required this.names,
+      required this.submenuFunctions});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -27,7 +31,7 @@ class MenuButton extends StatelessWidget {
               names.length,
               (index) => PopUp(
                     child: TextButton(
-                      onPressed: () => {},
+                      onPressed: submenuFunctions[index],
                       child: Text(
                         names[index],
                         style: Theme.of(context).primaryTextTheme.button,
