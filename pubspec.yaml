@@ -37,6 +37,14 @@ dependencies:
   provider: ^5.0.0
   google_sign_in: ^5.0.4
   googleapis: ^4.0.0
+  googleapis_auth: any
+  flutter_secure_storage: ^3.2.1+1
+  url_launcher: any
+  file_picker: any
+  flutter_markdown: ^0.6.4
+  carousel_slider: ^4.0.0
+  video_player: ^2.1.12
+  html: ^0.15.0
 
 dev_dependencies:
   flutter_test:

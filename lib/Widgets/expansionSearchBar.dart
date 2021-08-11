@@ -1,11 +1,11 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nemo/getsearchlist.dart';
 import 'package:nemo/providers/search_provider.dart';
 import 'package:nemo/Widgets/custom_expansion_tile.dart';
 import 'package:nemo/Widgets/searchBar.dart';
 import 'package:provider/provider.dart';
-import 'package:nemo/screens/list_of_Entities.dart';
+import 'package:nemo/screens/list_of_entities.dart';
 
 class ExpansionSearchBar extends StatefulWidget {
   final String? tooltip;
@@ -19,16 +19,7 @@ class _ExpansionSearchBarState extends State<ExpansionSearchBar> {
   TextEditingController? _controller;
   FocusNode? _focusNode;
   List<String>? _searchSuggestions = [];
-  List<String>? dumyData = [
-    "Tiger",
-    "Lion",
-    "Snake",
-    "Shark",
-    "CrayFish",
-    "Dog",
-    "Cat",
-    "Dinosaur"
-  ];
+  List<String>? dumyData = searchdata;
   void _buildSuggestions() {
     if (_controller!.text.isEmpty) {
       _searchSuggestions = [];
@@ -45,6 +36,7 @@ class _ExpansionSearchBarState extends State<ExpansionSearchBar> {
     _controller = TextEditingController(text: "");
     _controller?.addListener(_buildSuggestions);
     _focusNode = FocusNode();
+    //print(searchdata);
     super.initState();
   }
 
@@ -148,11 +140,11 @@ class SearchItem extends StatelessWidget {
       color: Colors.white.withOpacity(0.16),
       child: ListTile(
         dense: true,
-        onTap: () => Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => ListOfEntities())),
+        // onTap: () => Navigator.of(context)
+        //     .push(MaterialPageRoute(builder: (context) => ListOfEntities())),
         title: Text(
           item ?? "Invalid Data",
-          style: Theme.of(context).primaryTextTheme.headline4,
+          //style: Theme.of(context).primaryTextTheme.headline4,
         ),
       ),
     );
