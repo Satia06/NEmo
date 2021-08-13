@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nemo/drivenew/googledrive.dart';
 import 'documentPage.dart';
-import 'package:flutter/services.dart';
 import 'package:googleapis/docs/v1.dart' as docsV1;
 import 'dart:ui';
 
@@ -17,7 +16,6 @@ class _ListOfEntitiesState extends State<ListOfEntities> {
   @override
   final drive = GoogleDrive();
   final List<Widget> someList = [];
-  List<docsV1.StructuralElement> _listItems = [];
   List _traits = [];
   var _title;
   var _description;
@@ -231,6 +229,33 @@ class _ListOfEntitiesState extends State<ListOfEntities> {
               child: Stack(
                 children: <Widget>[
                   Image.memory(temp1, fit: BoxFit.cover, width: 1000.0),
+                  Positioned(
+                    bottom: 0.0,
+                    left: 0.0,
+                    right: 0.0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Color.fromARGB(200, 0, 0, 0),
+                            Color.fromARGB(0, 0, 0, 0)
+                          ],
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                        ),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 20.0),
+                      child: Text(
+                        _temp[j]["name"],
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               )),
         ),

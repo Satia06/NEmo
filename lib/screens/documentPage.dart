@@ -17,6 +17,8 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:ui';
 
+final themeMode = ValueNotifier(2);
+
 final List<String> imgList = [
   'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
   'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
@@ -38,8 +40,8 @@ class DocumentPage extends StatefulWidget {
 }
 
 class _DocumentPageState extends State<DocumentPage> {
-  VideoPlayerController _controller = VideoPlayerController.network(
-      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4');
+  // VideoPlayerController _controller = VideoPlayerController.network(
+  //     'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4');
   someFunction() async {
     // final blob = await html.Blob(widget._temp);
     // final url = await html.Url.createObjectUrlFromBlob(blob);
@@ -47,50 +49,6 @@ class _DocumentPageState extends State<DocumentPage> {
   }
 
   final drive = GoogleDrive();
-  List<docsV1.StructuralElement> _listItems = [];
-  Map _imagesData = {};
-  bool _contentLoaded = false;
-
-  // Future someFunction() async {
-  //   final List<Widget> someList = [];
-  //   for (var j = 0; j < widget._maybeimage.length; j++) {
-  //     var temp1 = await drive.fileImageFuntion(
-  //         widget._maybeimage[1]["id"], widget._client);
-  //     temp1 = await temp1.stream.toBytes();
-  //     //print(temp1);
-  //     //_maybeimage.add(await temp1);
-  //     someList.add(Container(
-  //       child: Container(
-  //         margin: EdgeInsets.all(5.0),
-  //         child: ClipRRect(
-  //             borderRadius: BorderRadius.all(Radius.circular(5.0)),
-  //             child: Stack(
-  //               children: <Widget>[
-  //                 Image.network(temp1, fit: BoxFit.cover, width: 1000.0),
-  //               ],
-  //             )),
-  //       ),
-  //     ));
-  //   }
-  //
-  //   return someList;
-  // }
-  //
-  // final List<Widget> imageSliders = imgList
-  //     .map((item) => Container(
-  //           child: Container(
-  //             margin: EdgeInsets.all(5.0),
-  //             child: ClipRRect(
-  //                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
-  //                 child: Stack(
-  //                   children: <Widget>[
-  //                     Image.network(item, fit: BoxFit.cover, width: 1000.0),
-  //                   ],
-  //                 )),
-  //           ),
-  //         ))
-  //     .toList();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -157,6 +115,7 @@ class _DocumentPageState extends State<DocumentPage> {
                         options: CarouselOptions(
                           autoPlay: true,
                           aspectRatio: 2.0,
+                          //scrollDirection: Axis.vertical,
                           enlargeCenterPage: true,
                         ),
                         items: widget._maybeimage,

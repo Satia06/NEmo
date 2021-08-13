@@ -7,8 +7,13 @@ import 'package:nemo/providers/search_provider.dart';
 import 'package:nemo/Widgets/expansionSearchBar.dart';
 import 'package:provider/provider.dart';
 import 'package:nemo/screens/list_of_entities.dart';
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:nemo/screens/signinpage.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 class HomePage extends StatefulWidget {
   var _client;
@@ -19,8 +24,46 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final doc = pw.Document();
   void emptyFunction() {
     return;
+  }
+
+  void printList() {
+    print("print called");
+    doc.addPage(pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return pw.Center(
+            child: pw.Text('Hello World'),
+          ); // Center
+        }));
+    doc.save();
+  }
+
+  Future _generatePdf() async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (context) => pw.Placeholder(),
+      ),
+    );
+
+    return pdf.save();
+  }
+
+  void listOfEntities() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => ListOfEntities(widget._list, widget._client)),
+    );
+  }
+
+  void feedbackForm() {
+    launch('www.google.com');
   }
 
   void _close() {
@@ -53,19 +96,19 @@ class _HomePageState extends State<HomePage> {
                           MenuButton(
                               buttonName: 'File',
                               names: ['Print', 'Close'],
-                              submenuFunctions: [emptyFunction, _close]),
+                              submenuFunctions: [printList, _close]),
                           MenuButton(
                               buttonName: 'Edit',
                               names: ['Add/Modify'],
-                              submenuFunctions: [emptyFunction]),
+                              submenuFunctions: [_generatePdf]),
                           MenuButton(
                               buttonName: 'View',
                               names: ['List'],
-                              submenuFunctions: [emptyFunction]),
+                              submenuFunctions: [listOfEntities]),
                           MenuButton(
                               buttonName: 'Help',
                               names: ['Feedback'],
-                              submenuFunctions: [emptyFunction])
+                              submenuFunctions: [feedbackForm])
                         ],
                       ),
                       Row(
@@ -78,7 +121,7 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     OutlinedButton(
                       onPressed: () async {
-                        print("asdfksahdf");
+                        //print("asdfksahdf");
                         Navigator.push(
                           context,
                           MaterialPageRoute(
