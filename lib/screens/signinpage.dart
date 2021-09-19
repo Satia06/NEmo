@@ -96,7 +96,8 @@ class _LoginPageState extends State<LoginPage> {
                       var _list;
                       _list = await drive.fileListFuntion(
                           '1bHsgD1OSCNk9CWHhLBOsTEyIel3qwSqb', _client);
-                      await getsearchitems(_list);
+                      await getsearchitems(_client);
+                      print("completed with search database");
                       Navigator.push(
                         context,
                         MaterialPageRoute(

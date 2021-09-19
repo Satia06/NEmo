@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:nemo/drivenew/googledrive.dart';
 import 'documentPage.dart';
+import 'package:nemo/drivenew/load_document.dart';
 import 'package:googleapis/docs/v1.dart' as docsV1;
 import 'dart:ui';
+import 'dart:io' as io;
+import 'package:path/path.dart' as path;
+////
+import 'dart:async';
+
+import 'dart:typed_data';
+
+final List<Widget> someList = [];
+List traits = [];
+var title;
+var description;
 
 class ListOfEntities extends StatefulWidget {
   List list1;
@@ -15,10 +27,7 @@ class ListOfEntities extends StatefulWidget {
 class _ListOfEntitiesState extends State<ListOfEntities> {
   @override
   final drive = GoogleDrive();
-  final List<Widget> someList = [];
-  List _traits = [];
-  var _title;
-  var _description;
+
   bool _load = false;
   //var _maybeimage;
   @override
@@ -70,6 +79,10 @@ class _ListOfEntitiesState extends State<ListOfEntities> {
                             ),
                           ),
                         ),
+                        TextButton(
+                          child: Text('Back'),
+                          onPressed: () => Navigator.pop(context), //_load=false
+                        )
                       ],
                     ),
                   ),
@@ -130,14 +143,14 @@ class _ListOfEntitiesState extends State<ListOfEntities> {
                                 var _list;
                                 _list = await drive.fileListFuntion(
                                     widget.list1[index]["id"], widget._client);
-                                await _loadDocument(_list);
+                                await loadDocument(_list, widget._client);
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => DocumentPage(
-                                          _description,
-                                          _traits,
-                                          _title,
+                                          description,
+                                          traits,
+                                          title,
                                           someList)),
                                 );
                                 //print(_list);
@@ -185,101 +198,5 @@ class _ListOfEntitiesState extends State<ListOfEntities> {
         ),
       ],
     ));
-  }
-
-  Future<void> _loadDocument(List _ofFileId) async {
-    someList.clear();
-    _traits.clear();
-    final docsApi = docsV1.DocsApi(widget._client);
-    var document = await docsApi.documents.get(_ofFileId[0]["id"]);
-    //print('document.title: ${document.body}');
-    _title = document.title;
-    _description =
-        document.body!.content![4].paragraph?.elements![0].textRun!.content;
-    for (var i = 7; i < document.body!.content!.length; i++) {
-      _traits.add(
-          document.body!.content![i].paragraph?.elements![0].textRun!.content);
-    }
-    print(_traits.length);
-    print("deletethis>" + _traits[3]);
-    _traits.removeWhere((value) => value == "\n");
-    print(_traits.length);
-    print(_traits);
-    var _temp;
-    var _length;
-    if (_ofFileId[1]["name"] == "images") {
-      _temp = await drive.fileListFuntion(_ofFileId[1]["id"], widget._client);
-      _length = _temp.length;
-    } else {
-      _temp = await drive.fileListFuntion(_ofFileId[2]["id"], widget._client);
-      _length = _temp.length;
-    }
-    print(_temp.length);
-    for (var j = 0; j < _temp.length; j++) {
-      var temp1 = await drive.fileImageFuntion(_temp[j]["id"], widget._client);
-      print(_temp[j]["name"]);
-      temp1 = await temp1.stream.toBytes();
-      //print(temp1);
-      //_maybeimage.add(await temp1);
-      someList.add(Container(
-        child: Container(
-          margin: EdgeInsets.all(5.0),
-          child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(5.0)),
-              child: Stack(
-                children: <Widget>[
-                  Image.memory(temp1, fit: BoxFit.cover, width: 1000.0),
-                  Positioned(
-                    bottom: 0.0,
-                    left: 0.0,
-                    right: 0.0,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Color.fromARGB(200, 0, 0, 0),
-                            Color.fromARGB(0, 0, 0, 0)
-                          ],
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                        ),
-                      ),
-                      padding: EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 20.0),
-                      child: Text(
-                        _temp[j]["name"],
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              )),
-        ),
-      ));
-    }
-    // temp2 = await drive.fileImageFuntion(
-    //     "1AX5bFVgJSmSBuPBLKJOReBLw6ZFe64JY", widget._client);
-    // temp2 = temp2.stream.toBytes();
-    // print(temp2);
-
-    //_maybeimage = _temp;
-    //print(_temp);
-    //print(_length);
-
-    // for (var j = 0; j < _length; j++) {
-    //   var temp1 = await drive.fileImageFuntion(_temp[1]["id"], widget._client);
-    //   temp1 = await temp1.stream.toBytes();
-    //   //print(temp1);
-    //   _maybeimage.add(await temp1);
-    // }
-    //print(_temp[1]); // prints the 2nd image link
-    //_maybeimage = await drive.fileImageFuntion(_temp[1]["id"], widget._client);
-    //print("in conversion");
-    //_maybeimage = await _maybeimage.stream.toBytes();
-    //print(_maybeimage);
   }
 }
