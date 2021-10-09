@@ -18,6 +18,7 @@ import 'package:pdf/widgets.dart' as pw;
 //import 'package:printing/printing.dart';
 import 'package:nemo/drivenew/load_document.dart';
 import 'package:nemo/screens/documentPage.dart';
+import 'package:nemo/Widgets/pdf_util.dart';
 
 bool isSearching = false;
 
@@ -35,7 +36,27 @@ class _HomePageState extends State<HomePage> {
     return;
   }
 
+  // late DriveProvider driveProvider;
+  // late EntityProvider entityProvider;
+
+  // DriveUtils _driveUtils = DriveUtils();
+  ///
+  ///
+  ///
+  ///
+  /// A function that takes a string input from the user which is the location of folder which has videos
+  ///  videoFolderPath <= update this variable
+  ///
   void printList() {
+    List<String> entitiesList = [];
+    for (int i = 0; i < widget._list.length; i++) {
+      entitiesList.add(widget._list[i]["name"]);
+    }
+    entitiesList.reversed;
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => PdfUtil(entityProvider: entitiesList)));
     print("print called");
     doc.addPage(pw.Page(
         pageFormat: PdfPageFormat.a4,
@@ -70,7 +91,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void feedbackForm() {
-    launch('www.google.com');
+    launch('https://forms.gle/Bgz1YedkJygnbUZY7');
   }
 
   void _close() {
@@ -101,6 +122,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    // driveProvider = Provider.of<DriveProvider>(context, listen: false);
+    // entityProvider = Provider.of<EntityProvider>(context, listen: false);
+    // driveProvider.driveUtils.init(context);
     super.initState();
     isSearching = false;
     _load = false;
@@ -303,7 +327,9 @@ class _HomePageState extends State<HomePage> {
                                                             description,
                                                             traits,
                                                             title,
-                                                            someList)),
+                                                            someList,
+                                                            widget._client,
+                                                            videoFolder)),
                                               );
                                               //print(_list);
                                               // print(_list[0]["id"]);/

@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:nemo/screens/video_player_custom.dart';
 //E:\Coding\NEmo-main\rtyui
 //////////
+import 'package:nemo/drivenew/load_document.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -21,7 +22,10 @@ class DocumentPage extends StatefulWidget {
   var _description;
   var _maybeimage;
   String _title;
-  DocumentPage(this._description, this._traits, this._title, this._maybeimage);
+  var _client;
+  var _videoFolder;
+  DocumentPage(this._description, this._traits, this._title, this._maybeimage,
+      this._client, this._videoFolder);
 
   @override
   _DocumentPageState createState() => _DocumentPageState();
@@ -141,6 +145,11 @@ class _DocumentPageState extends State<DocumentPage> {
                         items: widget._maybeimage,
                       ),
                     )),
+                TextButton(
+                    child: Text('Load more Images'),
+                    onPressed: () => this.setState(() {
+                          getMoreImages(widget._client);
+                        })),
                 Text("Photos"),
                 // FlatButton(
                 //   child: Text('to video'),
@@ -152,7 +161,7 @@ class _DocumentPageState extends State<DocumentPage> {
                 //   },
                 // ),
                 Container(
-                  height: 290,
+                  height: 240,
                   width: 820, //920
                   child: ListView(
                     controller: controller1,
@@ -185,7 +194,11 @@ class _DocumentPageState extends State<DocumentPage> {
                                           medias: medias,
                                           playlistMode: PlaylistMode.single),
                                     );
-                              }))
+                              })),
+                      TextButton(
+                          child: Text('Load Next video'),
+                          onPressed: () =>
+                              getVideo(widget._client, widget._videoFolder)),
                     ],
                   ),
                 ),

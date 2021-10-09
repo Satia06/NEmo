@@ -11,11 +11,14 @@ import 'package:nemo/screens/documentPage.dart';
 
 import 'package:dart_vlc/dart_vlc.dart';
 
+String videoFolderPath = '';
+final drive = GoogleDrive();
+int videoNumber = 0;
 Future<void> loadDocument(List _ofFileId, var _client) async {
-  final drive = GoogleDrive();
   someList.clear();
   traits.clear();
   medias.clear();
+  videoNumber = 0;
   final docsApi = docsV1.DocsApi(_client);
   var document = await docsApi.documents.get(_ofFileId[0]["id"]);
   //print('document.title: ${document.body}');
@@ -44,8 +47,16 @@ Future<void> loadDocument(List _ofFileId, var _client) async {
     _videofolder = await drive.fileListFuntion(_ofFileId[1]["id"], _client);
     _length = _imagefolder.length;
   }
+  videoFolder = _videofolder;
+  imageFolder = _imagefolder;
   print(_imagefolder.length);
-  for (var j = 0; j < _imagefolder.length; j++) {
+  int loadthismanyimages = 4;
+  if (_imagefolder.length < 4)
+    loadthismanyimages = _imagefolder.length;
+  else
+    loadthismanyimages = 4;
+  for (var j = 0; j < loadthismanyimages; j++) {
+    // _imagefolder.length
     var temp1 = await drive.fileImageFuntion(_imagefolder[j]["id"], _client);
     print(_imagefolder[j]["name"]);
     temp1 = await temp1.stream.toBytes();
@@ -92,37 +103,7 @@ Future<void> loadDocument(List _ofFileId, var _client) async {
     ));
   }
   //var temp2;
-  final pathContext = path.Context(style: path.Style.windows);
-  var tempDir = await getTemporaryDirectory();
-  String tempPath = tempDir.path;
-  print(tempPath);
-  //final currentPath = path.current;
-  final filePath = pathContext.join(tempPath, _videofolder[0]["name"]);
-  print(filePath);
-  if (await io.File(filePath).exists() == false) {
-    print("file not already there");
-    await drive
-        .fileImageFuntion(_videofolder[0]["id"], _client)
-        .then((response) {
-      print("file downloaded");
-      Uint8List byteList;
-      final bytesBuilder = BytesBuilder();
-      (response).stream.listen((data) {
-        print("stream thing");
-        bytesBuilder.add(data);
-      }).onDone(() async {
-        byteList = await bytesBuilder.toBytes();
-        final saveFile = await io.File(filePath);
-        print("sfas");
-        saveFile.writeAsBytes(byteList.toList());
-        print("File saved at ${saveFile.path}");
-      });
-    });
-  } else
-    print("file already there");
-  medias.add(
-    Media.file(io.File(filePath.replaceAll('"', ''))),
-  );
+  getVideo(_client, _videofolder);
   // temp2 = temp2.stream.toBytes();
   // print(temp2);
   // final saveFile = io.File("E:");
@@ -146,4 +127,99 @@ Future<void> loadDocument(List _ofFileId, var _client) async {
   // print("in conversion");
   // _maybeimage = await _maybeimage.stream.toBytes();
   // print(_maybeimage);
+}
+
+Future<void> getVideo(var _client, var _videofolder) async {
+  final pathContext = path.Context(style: path.Style.windows);
+  var tempDir = await getTemporaryDirectory();
+  String tempPath = tempDir.path;
+
+  print(tempPath);
+  //final currentPath = path.current;
+  final filePath =
+      pathContext.join(tempPath, _videofolder[videoNumber]["name"]);
+  print(filePath);
+  final filePath1 =
+      pathContext.join(videoFolderPath, _videofolder[videoNumber]["name"]);
+  if (await io.File(filePath).exists() == false &&
+      await io.File(filePath1).exists() == false) {
+    print("file not already there");
+    await drive
+        .fileImageFuntion(_videofolder[videoNumber]["id"], _client)
+        .then((response) {
+      print("file downloaded");
+      Uint8List byteList;
+      final bytesBuilder = BytesBuilder();
+      (response).stream.listen((data) {
+        print("stream thing");
+        bytesBuilder.add(data);
+      }).onDone(() async {
+        byteList = await bytesBuilder.toBytes();
+        final saveFile = await io.File(filePath);
+        print("sfas");
+        saveFile.writeAsBytes(byteList.toList());
+        print("File saved at ${saveFile.path}");
+      });
+    });
+  } else
+    print("file already there");
+  if (await io.File(filePath).exists() == true)
+    medias.add(
+      Media.file(io.File(filePath.replaceAll('"', ''))),
+    );
+  else
+    medias.add(
+      Media.file(io.File(filePath1.replaceAll('"', ''))),
+    );
+  videoNumber++;
+}
+
+Future<void> getMoreImages(var _client) async {
+  for (var j = someList.length; j < imageFolder.length; j++) {
+    // _imagefolder.length
+    var temp1 = await drive.fileImageFuntion(imageFolder[j]["id"], _client);
+    print(imageFolder[j]["name"]);
+    temp1 = await temp1.stream.toBytes();
+    //print(temp1);
+    //_maybeimage.add(await temp1);
+    someList.add(Container(
+      child: Container(
+        margin: EdgeInsets.all(5.0),
+        child: ClipRRect(
+            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+            child: Stack(
+              children: <Widget>[
+                Image.memory(temp1, fit: BoxFit.cover, width: 1000.0),
+                Positioned(
+                  bottom: 0.0,
+                  left: 0.0,
+                  right: 0.0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Color.fromARGB(200, 0, 0, 0),
+                          Color.fromARGB(0, 0, 0, 0)
+                        ],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                      ),
+                    ),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                    child: Text(
+                      imageFolder[j]["name"],
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            )),
+      ),
+    ));
+  }
 }

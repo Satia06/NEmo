@@ -15,6 +15,8 @@ final List<Widget> someList = [];
 List traits = [];
 var title;
 var description;
+var videoFolder;
+var imageFolder;
 
 class ListOfEntities extends StatefulWidget {
   List list1;
@@ -29,7 +31,7 @@ class _ListOfEntitiesState extends State<ListOfEntities> {
   final drive = GoogleDrive();
 
   bool _load = false;
-  //var _maybeimage;
+  //var _maybeimage
   @override
   void initState() {
     // TODO: implement initState
@@ -151,7 +153,9 @@ class _ListOfEntitiesState extends State<ListOfEntities> {
                                           description,
                                           traits,
                                           title,
-                                          someList)),
+                                          someList,
+                                          widget._client,
+                                          videoFolder)),
                                 );
                                 //print(_list);
                                 // print(_list[0]["id"]);/
