@@ -3,7 +3,10 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  dart_vlc
   desktop_window
+  printing
+  url_launcher_windows
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

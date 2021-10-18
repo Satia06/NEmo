@@ -1,54 +1,90 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:googleapis/docs/v1.dart' as docsV1;
-import 'package:googleapis/drive/v2.dart';
-//import 'package:kt_dart/collection.dart';
-//import 'package:kt_dart/kt.dart';
+import 'package:nemo/screens/video_player_custom.dart';
+//E:\Coding\NEmo-main\rtyui
+//////////
+import 'package:nemo/drivenew/load_document.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:dart_vlc/dart_vlc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:nemo/drivenew/googledrive.dart';
-import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
-//import 'dart:html' as html;
-//import 'package:video_player_web/video_player_web.dart';
-import 'dart:io';
-import 'dart:convert';
-import 'dart:ui';
 
 final themeMode = ValueNotifier(2);
 
-final List<String> imgList = [
-  'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
-  'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
-  'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=94a1e718d89ca60a6337a6008341ca50&auto=format&fit=crop&w=1950&q=80',
-  'https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=89719a0d55dd05e2deae4120227e6efc&auto=format&fit=crop&w=1953&q=80',
-  'https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8c6e5e3aba713b17aa1fe71ab4f0ae5b&auto=format&fit=crop&w=1352&q=80',
-  'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80'
-];
+List<Media> medias = <Media>[];
 
 class DocumentPage extends StatefulWidget {
   List _traits = [];
   var _description;
-  var _maybeimage;
+  var maybeimage;
   String _title;
-  DocumentPage(this._description, this._traits, this._title, this._maybeimage);
+  var _client;
+  var _videoFolder;
+  DocumentPage(this._description, this._traits, this._title, this.maybeimage,
+      this._client, this._videoFolder);
 
   @override
   _DocumentPageState createState() => _DocumentPageState();
 }
 
 class _DocumentPageState extends State<DocumentPage> {
-  // VideoPlayerController _controller = VideoPlayerController.network(
-  //     'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4');
-  someFunction() async {
-    // final blob = await html.Blob(widget._temp);
-    // final url = await html.Url.createObjectUrlFromBlob(blob);
-    // _controller = await VideoPlayerController.network(url);
+  Player player = Player(id: 0);
+  MediaType mediaType = MediaType.file;
+  CurrentState current = new CurrentState();
+  PositionState position = new PositionState();
+  PlaybackState playback = new PlaybackState();
+  GeneralState general = new GeneralState();
+  VideoDimensions videoDimensions = new VideoDimensions(0, 0);
+  List<Device> devices = <Device>[];
+  TextEditingController controller = new TextEditingController();
+  TextEditingController metasController = new TextEditingController();
+  Media? metasMedia;
+  Playlist playlist = Playlist(
+    medias: medias,
+    playlistMode: PlaylistMode.single
+  );
+  int currentVideoIndex = 0;
+  bool isLoading = false;
+
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    //  this.player = await Player.create(id: 0);
+    this.player.currentStream.listen((current) {
+      this.setState(() => this.current = current);
+    });
+    this.player.positionStream.listen((position) {
+      this.setState(() => this.position = position);
+    });
+    this.player.playbackStream.listen((playback) {
+      this.setState(() => this.playback = playback);
+    });
   }
 
   final drive = GoogleDrive();
+  ScrollController controller1 = ScrollController();
+  ScrollController controller2 = ScrollController();
+  @override
+  void initState() {
+    DartVLC.initialize();
+    // TODO: implement initState
+    super.initState();
+    this.setState(() {
+      this.player.open(
+            new Playlist(medias: medias, playlistMode: PlaylistMode.single),
+          );
+    });
+  }
+
+  void dispose() {
+    super.dispose();
+    medias.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,13 +101,6 @@ class _DocumentPageState extends State<DocumentPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Container(
-                  //   child: FlatButton(
-                  //       onPressed: () {
-                  //         //_loadDocument();
-                  //       },
-                  //       child: Text('Click to refresh')),
-                  // ),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Text("Description:"),
@@ -106,6 +135,8 @@ class _DocumentPageState extends State<DocumentPage> {
               child: Text(""),
             ),
             Column(
+              // shrinkWrap: true,
+              // controller: controller2,
               children: [
                 Container(
                     width: MediaQuery.of(context).size.width / 2,
@@ -118,24 +149,95 @@ class _DocumentPageState extends State<DocumentPage> {
                           //scrollDirection: Axis.vertical,
                           enlargeCenterPage: true,
                         ),
-                        items: widget._maybeimage,
+                        items: widget.maybeimage,
                       ),
                     )),
+                TextButton(
+                  child: Text('Load more Images'),
+                  onPressed: () async{
+                    final tempList = await getMoreImages(widget._client);
+                    setState(() => widget.maybeimage = tempList);
+                  },
+                ),
                 Text("Photos"),
-                // Center(
-                //   child: _controller.value.isInitialized
-                //       ? AspectRatio(
-                //           aspectRatio: _controller.value.aspectRatio,
-                //           child: VideoPlayer(_controller),
-                //         )
-                //       : Container(),
-                // )
-                // Container(
-                //   height: 50,
-                //   child: Image.memory(widget._maybeimage),
-                //),
-                //Media(widget._maybeimage.stream, widget._maybeimage.length),
-                //Image(image: _maybeimage)
+                // FlatButton(
+                //   child: Text('to video'),
+                //   onPressed: () {
+                //     Navigator.push(
+                //       context,
+                //       MaterialPageRoute(builder: (context) => DartVLCExample()),
+                //     );
+                //   },
+                // ),
+                Container(
+                  height: 240,
+                  width: 820, //920
+                  child: ListView(
+                    controller: controller1,
+                    shrinkWrap: true,
+                    padding: EdgeInsets.all(4.0),
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          isLoading?
+                          Stack(
+                            children: [
+                              Card(
+                                clipBehavior: Clip.antiAlias,
+                                elevation: 2.0,
+                                child: Video(
+                                  player: player,
+                                  width: 640,
+                                  height: 480,
+                                  volumeThumbColor: Colors.blue,
+                                  volumeActiveColor: Colors.blue,
+                                ),
+                              ),
+                              Positioned(
+                                left: 320,
+                                top: 240,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    backgroundColor: Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                              ),
+                            ]
+                          ):
+                          Card(
+                            clipBehavior: Clip.antiAlias,
+                            elevation: 2.0,
+                            child: Video(
+                              player: player,
+                              width: 640,
+                              height: 480,
+                              volumeThumbColor: Colors.blue,
+                              volumeActiveColor: Colors.blue,
+                            ),
+                          ),
+                        ],
+                      ),
+                      TextButton(
+                        child: Text('Refresh Player'),
+                        onPressed: () => this.setState(() {
+                          this.player.open(Playlist(
+                                          medias: medias,
+                                          playlistMode: PlaylistMode.single),
+                                    );
+                        })
+                      ),
+                      TextButton(
+                        child: Text('Load Next video'),
+                        onPressed: () {
+                          getVideo(widget._client, widget._videoFolder);
+                        }
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ],
@@ -181,5 +283,5 @@ class MyBullet extends StatelessWidget {
 //         document.body!.content![i].paragraph?.elements![0].textRun!.content);
 //   }
 //   print(_traits);
-//   _maybeimage = await drive.fileImageFuntion(widget._client);
+//   maybeimage = await drive.fileImageFuntion(widget._client);
 // }
